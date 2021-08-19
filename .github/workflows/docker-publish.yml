@@ -41,7 +41,7 @@ jobs:
           pip install -U pip
           pip install poetry
           poetry export --without-hashes > requirements.txt
-          poetry version -s > $VERSION
+          echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
