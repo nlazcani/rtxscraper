@@ -41,7 +41,7 @@ jobs:
           pip install -U pip
           pip install poetry
           poetry export --without-hashes > requirements.txt
-          poetry version -s >> $VERSION
+          poetry version -s > $VERSION
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
@@ -60,6 +60,10 @@ jobs:
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+              latest
+              ${{ env.VERSION }}
+
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -68,5 +72,5 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.VERSION }}, latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
