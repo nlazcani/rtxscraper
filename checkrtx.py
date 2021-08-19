@@ -28,8 +28,6 @@ chrome_options.add_argument("--disable-gpu")
 caps = DesiredCapabilities().CHROME
 caps["pageLoadStrategy"] = "eager"  # interactive
 
-link = os.getenv("LINK")
-custom_message = os.getenv("MESSAGE")
 sleep_sec = os.getenv("TIME")
 chatid = os.getenv("CHAT")
 DATA_FOLDER = "data"
@@ -72,7 +70,7 @@ try:
                 original[i] = notice[i]
                 bot = telegram.Bot("1906920746:AAEObw_eBqg1PkIBOSiwkIMTkzCWOtgNRUk")
                 bot.send_message(
-                    chat_id=chatid, text=f"{notice[i]} {url['message']} {link}"
+                    chat_id=chatid, text=f"{notice[i]} {url['message']} {url['link']}"
                 )
                 root.info("chat")
             else:

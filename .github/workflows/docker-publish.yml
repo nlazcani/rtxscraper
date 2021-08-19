@@ -21,6 +21,8 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
+  VERSION: 0.0.0
+
 
 jobs:
   build:
@@ -39,6 +41,7 @@ jobs:
           pip install -U pip
           pip install poetry
           poetry export --without-hashes > requirements.txt
+          poetry version -s >> $VERSION
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
@@ -65,5 +68,5 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ env.VERSION }}, latest
           labels: ${{ steps.meta.outputs.labels }}
