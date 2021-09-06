@@ -37,45 +37,46 @@ with open(os.path.join(DATA_FOLDER, "urls.json"), "r") as file:
     for line in file:
         urls.append(json.loads(line))
 
-try:
+for i, url in enumerate(urls):
     driver = webdriver.Chrome(
         ChromeDriverManager().install(),
         desired_capabilities=caps,
         chrome_options=chrome_options,
     )
-    for i, url in enumerate(urls):
+    try:
         driver.get(url["url"])
         notice.append("")
-        try:
-            notice[i] = driver.find_element_by_class_name(url["class"]).text
-        except Exception:
-            pass
+        notice[i] = driver.find_element_by_class_name(url["class"]).text
         original.append(notice[i])
-    driver.close()
-    while True:
-        for i, url in enumerate(urls):
-            driver = webdriver.Chrome(
-                ChromeDriverManager().install(),
-                desired_capabilities=caps,
-                chrome_options=chrome_options,
-            )
+    except Exception as e:
+        notice[i] = ""
+        root.error(f"START - error getting: {url['url']} : {e}")
+    finally:
+        driver.close()
+while True:
+    for i, url in enumerate(urls):
+        driver = webdriver.Chrome(
+            ChromeDriverManager().install(),
+            desired_capabilities=caps,
+            chrome_options=chrome_options,
+        )
+        try:
             driver.get(url["url"])
-            try:
-                notice[i] = driver.find_element_by_class_name(url["class"]).text
-            except Exception:
-                notice[i] = ""
+            notice[i] = driver.find_element_by_class_name(url["class"]).text
+        except Exception as e:
+            notice[i] = ""
+            root.error(f"error getting: {url['url']} : {e}")
+        finally:
             driver.close()
-            root.debug(f"text getted: {str(notice[i])}")
-            if notice[i] != original[i]:
-                original[i] = notice[i]
-                bot = telegram.Bot("1906920746:AAEObw_eBqg1PkIBOSiwkIMTkzCWOtgNRUk")
-                bot.send_message(
-                    chat_id=chatid, text=f"{notice[i]} {url['message']} {url['link']}"
-                )
-                root.info("chat")
-            else:
-                root.info("nothing change")
-            root.info(msg=f"waitng for { int(sleep_sec)/len(urls) } seconds")
-            time.sleep(int(sleep_sec) / len(urls))
-finally:
-    driver.close()
+        root.debug(f"text getted: {str(notice[i])}")
+        if notice[i] != original[i]:
+            original[i] = notice[i]
+            bot = telegram.Bot("1906920746:AAEObw_eBqg1PkIBOSiwkIMTkzCWOtgNRUk")
+            bot.send_message(
+                chat_id=chatid, text=f"{notice[i]} {url['message']} {url['link']}"
+            )
+            root.info("chat")
+        else:
+            root.info("nothing change")
+        root.info(msg=f"waitng for { int(sleep_sec)/len(urls) } seconds")
+        time.sleep(int(sleep_sec) / len(urls))
