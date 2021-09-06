@@ -51,6 +51,7 @@ for i, url in enumerate(urls):
         original.append(notice[i])
     except NoSuchElementException:
         notice[i] = ""
+        original.append(notice[i])
     except Exception as e:
         root.error(f"START - error getting: {url['url']} : {e}")
     finally:
