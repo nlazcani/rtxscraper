@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.common.exceptions import NoSuchElementException
 import time
 import telegram
 import os
@@ -48,8 +49,9 @@ for i, url in enumerate(urls):
         notice.append("")
         notice[i] = driver.find_element_by_class_name(url["class"]).text
         original.append(notice[i])
-    except Exception as e:
+    except NoSuchElementException:
         notice[i] = ""
+    except Exception as e:
         root.error(f"START - error getting: {url['url']} : {e}")
     finally:
         driver.close()
@@ -63,8 +65,9 @@ while True:
         try:
             driver.get(url["url"])
             notice[i] = driver.find_element_by_class_name(url["class"]).text
-        except Exception as e:
+        except NoSuchElementException:
             notice[i] = ""
+        except Exception as e:
             root.error(f"error getting: {url['url']} : {e}")
         finally:
             driver.close()
